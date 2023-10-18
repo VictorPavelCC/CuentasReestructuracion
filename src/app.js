@@ -7,9 +7,10 @@ const handlebars = require('express-handlebars')
 const sessionRouter = require('./routes/sessions.router')
 const cartRouter = require("./routes/carts.router")
 const productRouter = require("./routes/products.router")
-
 const passport = require('passport')
 const initializePassport = require('./config/passport.config')
+const config = require("./config/config")
+
 
 const app = express()
 const PORT = 8080
@@ -24,18 +25,18 @@ app.listen(PORT, () => {
 })
 
 
-mongoose.connect("mongodb+srv://pavelcuentas:Tsuna_ZERO2@projectsplus.awa4d2q.mongodb.net/?retryWrites=true&w=majority", {
+mongoose.connect(config.mongoUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: "mongodb+srv://pavelcuentas:Tsuna_ZERO2@projectsplus.awa4d2q.mongodb.net/?retryWrites=true&w=majority",
+        mongoUrl: config.mongoUrl,
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
         ttl: 1000
     }),
-    secret: "coderhouse",
+    secret: config.privateKey,
     resave: false,
     saveUninitialized: false
 }))
