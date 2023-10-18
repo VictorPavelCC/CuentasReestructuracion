@@ -1,5 +1,5 @@
-const { userModel } = require('../models/user.model');
-const {cartModel} =require('../models/cart.model')
+const { userModel } = require('../dao/models/user.model');
+const {cartModel} =require('../dao/models/cart.model')
 const { createHash } = require('../../utils');
 const passport = require('passport');
 
