@@ -2,7 +2,7 @@ const { userModel } = require('../dao/models/user.model');
 const {cartModel} =require('../dao/models/cart.model')
 const { createHash } = require('../../utils');
 const passport = require('passport');
-
+const sessionsDao = require("../dao/sessionsDao")
 exports.renderRegister = (req, res) => {
     try {
         res.render("register.handlebars")
@@ -105,17 +105,22 @@ exports.githubAuthCallback = async (req, res) => {
 exports.restorePassword = async (req, res) => {
     try {
         let { email, newPassword } = req.body;
-        if (!email || !newPassword) return res.status(400).send({ status: "error", error: "Valores inexistentes" })
 
-        let user = await userModel.findOne({ email: email });
+        if (!email || !newPassword) {
+            return res.status(400).send({ status: "error", error: "Valores inexistentes" });
+        }
 
-        if (!user) return res.status(400).send({ status: "error", error: "Usuario no encontrado" })
+        let user = await sessionsDao.findUserByEmail(email);
+
+        if (!user) {
+            return res.status(400).send({ status: "error", error: "Usuario no encontrado" });
+        }
 
         user.password = createHash(newPassword);
-        await userModel.updateOne({ _id: user._id }, user);
-        res.redirect("/api/sessions");
+        await sessionsDao.updateUser(user);
 
+        res.redirect("/api/sessions");
     } catch (error) {
-        res.status(500).send("Error al cambiar contraseña.")
+        res.status(500).send("Error al cambiar contraseña.");
     }
 };
